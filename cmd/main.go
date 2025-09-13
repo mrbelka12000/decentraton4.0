@@ -40,6 +40,14 @@ func main() {
 }
 
 func insert(db *sql.DB, data []models.CSVData) error {
+	var clientCode int
+	if err := db.QueryRow(`SELECT client_code FROM clients LIMIT 1`).Scan(&clientCode); err != nil {
+		return fmt.Errorf("could not select client code: %w", err)
+	}
+	if clientCode != 0 {
+		fmt.Println("DATABASE already full filled")
+		return nil
+	}
 
 	for _, d := range data {
 		switch {
