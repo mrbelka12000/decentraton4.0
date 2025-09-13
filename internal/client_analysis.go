@@ -136,3 +136,8 @@ func GetAllClientAnalysis(db *sql.DB) (map[int]*ClientAnalysis, error) {
 
 	return allFeatures, nil
 }
+
+func (cf *ClientAnalysis) String() string {
+	return fmt.Sprintf("Code %d: %s, Balance=%.0f₸, Spend=%.0f₸, Online=%.1f%%, Gap=%.2f",
+		cf.ClientCode, cf.Name, cf.AvgMonthlyBalance, cf.TotalSpend, cf.OnlineShare*100, cf.CashGap)
+}

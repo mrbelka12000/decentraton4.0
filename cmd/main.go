@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -37,11 +38,19 @@ func main() {
 		log.Fatal(err)
 	}
 
+	allAnalysis, err := internal.GetAllClientAnalysis(db)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for clientCode, analysis := range allAnalysis {
+		fmt.Printf("Client %d: %+v\n", clientCode, analysis)
+	}
 }
 
 func insert(db *sql.DB, data []models.CSVData) error {
 	var clientCode int
-	if err := db.QueryRow(`SELECT client_code FROM clients LIMIT 1`).Scan(&clientCode); err != nil {
+	if err := db.QueryRow(`SELECT client_code FROM clients LIMIT 1`).Scan(&clientCode); err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return fmt.Errorf("could not select client code: %w", err)
 	}
 	if clientCode != 0 {
